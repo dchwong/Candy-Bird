@@ -10,7 +10,7 @@ function scaleContentToDevice() {
 	var headerHeight = $("[data-role=header]:visible").outerHeight(),
 		footerHeight = $("[data-role=footer]:visible").outerHeight(),
 		viewportHeight = $(window).height(),
-		$content = $("[role=main]:visible"),
+		$content = $("canvas"),
 		contentMargins =  $content.outerHeight() - $content.height();
 
 		contentheight = viewportHeight - headerHeight - footerHeight - contentMargins;
@@ -19,8 +19,11 @@ function scaleContentToDevice() {
 }
 
 
-		window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+	window.requestAnimationFrame = 
+		window.requestAnimationFrame || 
+		window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame || 
+        window.msRequestAnimationFrame;
 
 	var stage, w, h, loader;
 	var sky, grant, ground, hill, hill2, groundImg, bird, appStarted = false, finished = false, fallTimeout = null,
@@ -67,7 +70,7 @@ function scaleContentToDevice() {
 
 	function buildHill(){
 		var hillBitmap = loader.getResult("hill");
-		groundImg = loader.getResult("ground");
+		groundImg = loader.getResult("ground-bg");
 		
 		hill = new createjs.Shape();
 
@@ -77,36 +80,10 @@ function scaleContentToDevice() {
 		
 		hill.tileWidth = hillBitmap.width;
 
-		hill.y = h - hillBitmap.height - groundImg.height +5;
+		hill.y = h - hillBitmap.height - groundImg.height;
 
 		hill.x = 0;
 
-	}
-
-	function buildHill2(){
-		groundImg = loader.getResult("ground");
-
-		hill2 = new createjs.Bitmap(loader.getResult("hill2"));
-
-		hill2.setTransform(Math.random() * w, h-hill2.image.height*3-groundImg.height, 3, 3);
-
-	}
-
-	function buildMan(){
-		var data = new createjs.SpriteSheet({
-			"images": [loader.getResult("grant")],
-			"frames": {"regX": 0, "height": 292, "count": 64, "regY": 0, "width": 165},
-			// define two animations, run (loops, 1.5x speed) and jump (returns to run):
-			animations: {
-				run: [0, 25, "run", 1.5], 
-				jump: [26, 63, "run"]
-			}
-		});
-
-		grant = new createjs.Sprite(data, "run");
-		grant.setTransform(-200, 90, 0.8, 0.8);
-		grant.framerate = 30;
-		grant.x = 100;
 	}
 
 	function buildBird(){
@@ -144,13 +121,11 @@ function scaleContentToDevice() {
 	}
 
 	function loadResources(){
-
+    
 		var manifest = [
 			{src:"assets/runningGrant.png", id:"grant"},
 			{src:"assets/candybird/sky.png", id:"sky"},
-			{src:"assets/ground.png", id:"ground"},
 			{src:"assets/candybird/hill.png", id:"hill"},
-			{src:"assets/parallaxHill2.png", id:"hill2"},
 			{src:"assets/candybird/bg.png", id:"ground-bg"},
 			{src:"assets/candybird/bird-sprite.png", id:"bird"},
 			{src:"assets/candybird/cloud.png", id:"cloud"}
@@ -193,13 +168,9 @@ function scaleContentToDevice() {
 
 		buildCloud();
 
-		//buildHill2();
-
-		//buildMan();
-
 		buildBird();
 	
-		stage.addChild(sky, hill, hill2, ground, bird, cloud);
+		stage.addChild(sky, hill, ground, bird, cloud);
 		
 		stage.addEventListener("stagemousedown", handleJumpStart);
 
@@ -228,7 +199,7 @@ function scaleContentToDevice() {
 			.drawRect(0, 0, pipeWidth, pipeHeight);
 
 		pipe.x = w;
-		pipe.y = h -  pipeHeight - groundImg.height + 3;
+		pipe.y = h -  pipeHeight - groundImg.height;
 		pipe.width = pipeWidth;
 		pipe.height = pipeHeight;
 
@@ -426,22 +397,6 @@ function scaleContentToDevice() {
 		}
 
 		stage.update(event);
-		//console.log(deltaS * 200);
-		//console.log(ground.tileW);
-		//console.log(ground.x);
-		/*
-		hill.x = ( hill.x - deltaS * 30 );
-		
-		if (hill.x + hill.image.width * hill.scaleX <= 0) { 
-			hill.x = w; 
-		}
-
-		hill2.x = ( hill2.x - deltaS * 45 );
-		
-		if (hill2.x + hill2.image.width * hill2.scaleX <= 0) { 
-			hill2.x = w; 
-		}
-		*/
 		
 	}
 
