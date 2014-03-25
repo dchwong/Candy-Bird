@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Multi-page template</title>
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.2.min.css">
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/jquery.mobile-1.4.2.min.js"></script>
+	<script src="js/jquery.transit.js"></script>
+	<style>
+
+		.fpy-main{
+			background: #85c2cd;
+		}
+
+		.fpy-bg{
+			height: 100%; 
+			position: relative; 
+			width: 100%;
+		}
+
+		.fpy-tree{
+			position: absolute;
+			right: -50px;
+			bottom: 0;
+			background: green;
+			width: 50px;
+		}
+
+		.fpy-bird{
+			border-radius: 100%;
+			background: red;
+			height: 30px;
+			width: 30px;
+			position: absolute;
+			left: 100px;
+			bottom: 200px;
+		}
+
+	</style>
+
+	<script>
+		var contentheight;
+		function scaleContentToDevice() {
+			scroll(0, 0);
+			var headerHeight = $("[data-role=header]:visible").outerHeight(),
+				footerHeight = $("[data-role=footer]:visible").outerHeight(),
+				viewportHeight = $(window).height(),
+				$content = $("[role=main]:visible"),
+				contentMargins =  $content.outerHeight() - $content.height();
+
+			contentheight = viewportHeight - headerHeight - footerHeight - contentMargins;
+
+				$content.height( contentheight );
+		};
+
+		function getRandomInt (min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		//$.fx.speeds._default = 20000;
+		$.cssEase.linear = 'cubic-bezier(0,0,1,1)';
+		$(document).on("pageshow", function(){
+		    scaleContentToDevice();
+		   	//return;
+		
+
+		    function render(){
+				var $record;
+		    	if( $(".fpy-bg").find(".fpy-tree").length > 3){
+		    		return;
+		    	}
+		    	$record = $("<div />").addClass("fpy-tree");
+		    	
+		    	$record.height(getRandomInt( 50, contentheight));
+		    	
+		    	$(".fpy-bg").append($record);
+		    	
+		    	$record.transition({ x: -$(window).width() -50,easing: 'linear', duration: 5000, }, function(){
+
+		    	});
+		    	console.log($record.position());
+		    	
+			}
+
+
+			var stop = false;
+			window.setInterval(function(){
+
+				var left, top, $bird = $(".fpy-bird");
+				
+				if( stop){ return; }
+				$(".fpy-tree").each(function(index){
+					if( stop){ return; }
+					treePos = $(this).position();
+					birdPos = $bird.position();
+
+					//console.log(birdPos, treePos);
+					if( Math.floor( birdPos.left ) >= Math.floor( treePos.left )  
+						&& Math.floor(birdPos.top) >= Math.floor(treePos.top)){
+						
+						console.log("died");
+						console.log(treePos, birdPos, $(this), index);
+						stop = true;
+						window.clearInterval();
+					}
+				});
+
+			}, 10);
+
+		    setInterval(function(){
+				requestAnimationFrame(render);
+		    }, 2000); 
+
+		});
+	</script>
+
+	
+</head>
+
+<body>
+
+<div data-role="page" class="fpy-page">
+
+	<div data-role="header" id="jqmHeader">
+		<h1>Flappy Happy Bird</h1>
+	</div><!-- /header -->
+
+	<div role="main" class="ui-content fpy-main">
+
+		<div class="fpy-bg">
+		
+		</div>
+
+		<div class="fpy-bird">
+
+		</div>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+		<h4>Footer content</h4>
+	</div><!-- /footer -->
+
+</div><!-- /page -->
+</body>
+</html>
